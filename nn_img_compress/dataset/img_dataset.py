@@ -60,8 +60,8 @@ class ImageFolderDataset(Dataset):
 if __name__ == '__main__':
     import matplotlib.pyplot as plt
 
-    ds = ImageFolderDataset("E:/data/coco/val2017", is_train=False, is_test=False, n_inference=3600)
-    v_grid, v_value, i_grid, i_value, h, w, idx = ds[9]
+    ds = ImageFolderDataset("E:/data/coco/val2017", is_train=False, is_test=False, n_inference=32000)
+    v_grid, v_value, i_grid, i_value, h, w, idx = ds[50]
     image = np.zeros((h, w, 3), dtype=np.uint8)
     image[(i_grid[:, 0] * h).round().int(), (i_grid[:, 1] * w).round().int()] = (i_value * 255).numpy().astype(np.uint8)
 

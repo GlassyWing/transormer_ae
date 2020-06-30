@@ -51,11 +51,14 @@ class StateDecoder(nn.Module, ABC):
         if probe_emb.dim() == 2:
             probe_emb = probe_emb.unsqueeze(0).repeat(coor_emb.shape[0], 1, 1)
 
-        for i in range(self.n_layers):
-            # (bsz, d_n_points, d_model)
-            value_emb = self.decoders[i](coor_emb, probe_emb, encode_emb)
+        # (bsz, d_n_points, d_model)
+        coor_emb_parts = torch.split(coor_emb, 30000, dim=1)
+        value_embs = []
+        for coor_emb_part in coor_emb_parts:
+            value_emb = self.decoders[0](coor_emb_part, probe_emb, encode_emb)
+            value_embs.append(value_emb)
 
-        return value_emb
+        return torch.cat(value_embs, dim=1)
 
 
 if __name__ == '__main__':

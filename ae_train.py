@@ -50,19 +50,19 @@ if __name__ == '__main__':
 
     model = StateDAE(coor_size=2, feat_size=3, out_size=3,
                      n_sep=4, n_probe=64,
-                     n_enc_layers=3,
+                     n_enc_layers=4,
                      n_dec_layers=1,
                      drop_p=0.0,
                      dropatt=0.0,
-                     d_inner=256, d_model=128, pre_lnorm=True,
+                     d_inner=128, d_model=64, pre_lnorm=True,
                      n_head=8, d_head=16)
     model.to(device)
 
     if opt.pretrained_weights:
-        model.load_state_dict(torch.load(opt.pretrained_weights, map_location=device))
+        model.load_state_dict(torch.load(opt.pretrained_weights, map_location=device), strict=False)
 
-    train_ds = ImageFolderDataset(dataset_path, n_visible=3600, n_inference=25000, is_train=True)
-    valid_ds = ImageFolderDataset(dataset_path, n_visible=3600, n_inference=25000, is_train=False)
+    train_ds = ImageFolderDataset(dataset_path, n_visible=6400, n_inference=25000, is_train=True)
+    valid_ds = ImageFolderDataset(dataset_path, n_visible=6400, n_inference=25000, is_train=False)
     train_dataloader = DataLoader(train_ds, batch_size=batch_size, shuffle=True, num_workers=opt.n_cpu)
     valid_dataloader = DataLoader(valid_ds, batch_size=batch_size, shuffle=True, num_workers=opt.n_cpu)
 
@@ -121,7 +121,7 @@ if __name__ == '__main__':
 
                 image = np.zeros((int(h[0]), int(w[0]), 3), dtype=np.uint8)
                 t_coor = t_coor[0].cpu()
-                image[(t_coor[:, 0] * h[0]).int(), (t_coor[:, 1] * w[0]).int(), :] = outputs[0].astype(np.uint8)
+                image[(t_coor[:, 0] * h[0]).round().int(), (t_coor[:, 1] * w[0]).round().int(), :] = outputs[0].astype(np.uint8)
 
 
                 plt.imshow(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
